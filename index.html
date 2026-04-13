@@ -993,7 +993,7 @@ input[type="file"] { padding: 10px 14px; font-size: 13px; cursor: pointer; }
 <script>
 // ─── CONFIGURACIÓN ────────────────────────────────────────────
 // Pegá acá la URL de tu Google Apps Script una vez que lo deployés
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyaHWmt_Z_qRJCOfT7APtRqxLDAtUBA-TpkBg6icMUlFKunOZyOcXVNz7pXc6v7sNP8/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwyhFelohPy86kyXpuihvH-hbhrdMzAdkhcgDMATMlGk6zkGwGR8-WDmMugKj5yw8fB/exec';
 const CONNECTED = true; // URL configurada correctamente
 
 // Pegá acá el link de tu My Maps una vez que lo configures
@@ -1293,7 +1293,8 @@ async function saveCliente(){
   if(editingClientId){
     data.id=editingClientId;
     await apiPost({action:'updateClient',...data});
-    const idx=clients.findIndex(c=>c.id===editingClientId);
+    // Update local array immediately so list shows correct data right away
+    const idx=clients.findIndex(c=>(c.id||'').trim()===(editingClientId||'').trim());
     if(idx>=0) clients[idx]={...clients[idx],...data};
     showToast('Cliente actualizado ✓');
   } else {
@@ -1302,14 +1303,16 @@ async function saveCliente(){
     clients.push(data);
     showToast('Cliente guardado ✓');
   }
-  // Reload clients from sheet to reflect updates
-  if(CONNECTED){
-    const cr = await apiGet('getClients');
-    if(cr && cr.clients) clients = cr.clients.map(normalizeClient);
-  }
   setLoading(false);
   goBack();
   setTimeout(renderClientList,100);
+  // Reload from sheet in background after delay to ensure sheet is written
+  if(CONNECTED){
+    setTimeout(async()=>{
+      const cr = await apiGet('getClients');
+      if(cr && cr.clients){ clients = cr.clients.map(normalizeClient); renderClientList(); }
+    }, 3000);
+  }
 }
 
 async function deleteCliente(){
@@ -1618,8 +1621,8 @@ function saveOpVenta(){
 
 
 function editOpVenta(id){
-  const o = opVentas.find(x => x.id === id);
-  if(!o) return;
+  const o = opVentas.find(x => String(x.id||'').trim() === String(id||'').trim());
+  if(!o){ showToast('No se encontró la oportunidad'); return; }
   editingOpVentaId = id;
   // Populate edit fields
   document.getElementById('ov-edit-cliente').textContent = o.clienteNombre;
@@ -1638,7 +1641,7 @@ async function saveOpVentaEdit(){
   setLoading(true, 'Guardando...');
   await apiPost({ action:'updateOpVenta', id:editingOpVentaId, estado, comentarios });
   // Update local array
-  const idx = opVentas.findIndex(x => x.id === editingOpVentaId);
+  const idx = opVentas.findIndex(x => String(x.id||'').trim() === String(editingOpVentaId||'').trim());
   if(idx >= 0){ opVentas[idx].estado = estado; opVentas[idx].comentarios = comentarios; }
   setLoading(false);
   showToast('Oportunidad actualizada ✓');
