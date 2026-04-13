@@ -955,12 +955,45 @@ input[type="file"] { padding: 10px 14px; font-size: 13px; cursor: pointer; }
   </div>
 </div>
 
+
+<!-- ═══════════════════ OP VENTA EDIT ═══════════════════ -->
+<div id="screen-op-venta-edit" class="screen">
+  <div class="header">
+    <button class="back-btn" onclick="goBack()">← Volver</button>
+    <div class="header-row">
+      <div class="header-title">Editar Oportunidad</div>
+      <div class="header-vendor" id="hv-opve"></div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="card" style="margin-bottom:20px;">
+      <div style="font-size:11px;color:var(--copper);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:6px;">Cliente</div>
+      <div id="ov-edit-cliente" style="font-size:16px;color:var(--cream);font-weight:500;"></div>
+      <div id="ov-edit-productos" style="font-size:13px;color:var(--dim);margin-top:4px;"></div>
+    </div>
+    <div class="field">
+      <label class="field-label">Estado de la Oportunidad</label>
+      <select id="ov-edit-estado">
+        <option value="Pendiente">Pendiente</option>
+        <option value="En seguimiento">En seguimiento</option>
+        <option value="Cerrada">Cerrada</option>
+      </select>
+    </div>
+    <div class="field">
+      <label class="field-label">Comentarios sobre la Negociación</label>
+      <textarea id="ov-edit-comentarios" rows="8" placeholder="Agregá notas sobre el avance de la negociación..."></textarea>
+    </div>
+    <div class="divider"></div>
+    <button class="btn btn-primary" onclick="saveOpVentaEdit()">Guardar Cambios</button>
+  </div>
+</div>
+
 </div><!-- #app -->
 
 <script>
 // ─── CONFIGURACIÓN ────────────────────────────────────────────
 // Pegá acá la URL de tu Google Apps Script una vez que lo deployés
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyBT7A-9kaOpxHQtcdgZYTcrxKE2OvK9AhqsbIWp0BOd5mIh2PfuwKV6fg5-RvXkVRe/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyaHWmt_Z_qRJCOfT7APtRqxLDAtUBA-TpkBg6icMUlFKunOZyOcXVNz7pXc6v7sNP8/exec';
 const CONNECTED = true; // URL configurada correctamente
 
 // Pegá acá el link de tu My Maps una vez que lo configures
@@ -972,6 +1005,7 @@ let currentScreen = 'login';
 let screenHistory = [];
 let editingClientId = null;
 let editingProductId = null;
+let editingOpVentaId = null;
 let selectedVendorKey = null;
 
 let clients = [];
@@ -1267,6 +1301,11 @@ async function saveCliente(){
     data.id=res?.id||genId('C',clients);
     clients.push(data);
     showToast('Cliente guardado ✓');
+  }
+  // Reload clients from sheet to reflect updates
+  if(CONNECTED){
+    const cr = await apiGet('getClients');
+    if(cr && cr.clients) clients = cr.clients.map(normalizeClient);
   }
   setLoading(false);
   goBack();
@@ -1577,6 +1616,36 @@ function saveOpVenta(){
   });
 }
 
+
+function editOpVenta(id){
+  const o = opVentas.find(x => x.id === id);
+  if(!o) return;
+  editingOpVentaId = id;
+  // Populate edit fields
+  document.getElementById('ov-edit-cliente').textContent = o.clienteNombre;
+  document.getElementById('ov-edit-productos').textContent = (o.productos||[]).join(', ');
+  document.getElementById('ov-edit-estado').value = o.estado || 'Pendiente';
+  document.getElementById('ov-edit-comentarios').value = o.comentarios || '';
+  screenHistory.push(currentScreen);
+  showScreen('op-venta-edit');
+  updateHeaders();
+}
+
+async function saveOpVentaEdit(){
+  const estado = document.getElementById('ov-edit-estado').value;
+  const comentarios = document.getElementById('ov-edit-comentarios').value;
+  if(!estado){ showToast('Seleccioná un estado'); return; }
+  setLoading(true, 'Guardando...');
+  await apiPost({ action:'updateOpVenta', id:editingOpVentaId, estado, comentarios });
+  // Update local array
+  const idx = opVentas.findIndex(x => x.id === editingOpVentaId);
+  if(idx >= 0){ opVentas[idx].estado = estado; opVentas[idx].comentarios = comentarios; }
+  setLoading(false);
+  showToast('Oportunidad actualizada ✓');
+  goBack();
+  setTimeout(renderOpVentaList, 100);
+}
+
 function openMapa(){
   window.open(MYMAPS_URL, '_blank');
 }
@@ -1613,6 +1682,7 @@ window.saveStock=saveStock;window.saveOportunidadGondola=saveOportunidadGondola;
 window.savePrecios=savePrecios;window.saveVentaComp=saveVentaComp;
 window.previewFoto=previewFoto;window.saveFotos=saveFotos;
 window.saveOpVenta=saveOpVenta;window.openMapa=openMapa;
+window.editOpVenta=editOpVenta;window.saveOpVentaEdit=saveOpVentaEdit;
 window.renderClientList=renderClientList;window.showToast=showToast;
 
 loadVendors();
