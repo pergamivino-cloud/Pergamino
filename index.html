@@ -888,11 +888,18 @@ input[type="file"] { padding: 10px 14px; font-size: 13px; cursor: pointer; }
         <div style="font-size: 12px; color: var(--dim); margin-top: 2px;">PDF · Malbec, Pinot Noir, Chardonnay</div>
       </div>
     </div>
-    <div class="card" style="margin-bottom: 24px; display: flex; align-items: center; gap: 16px; cursor: pointer;" onclick="window.open('https://drive.google.com/drive/folders/10RY9XpP2vSs5GO7ITQ2Y9Vcn8Uui-kqS?usp=sharing', '_blank')">
+    <div class="card" style="margin-bottom: 12px; display: flex; align-items: center; gap: 16px; cursor: pointer;" onclick="window.open('https://drive.google.com/drive/folders/10RY9XpP2vSs5GO7ITQ2Y9Vcn8Uui-kqS?usp=sharing', '_blank')">
       <div style="font-size: 28px;">🖼️</div>
       <div>
         <div style="font-size: 15px; color: var(--cream); font-weight: 500;">Galería de Fotos</div>
         <div style="font-size: 12px; color: var(--dim); margin-top: 2px;">Imágenes para mostrar al cliente</div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom: 24px; display: flex; align-items: center; gap: 16px; cursor: pointer;" onclick="window.open('https://drive.google.com/drive/folders/1dwzLjjKdcNukSjIxj8HNua6zYuFO8jnj?usp=sharing', '_blank')">
+      <div style="font-size: 28px;">📸</div>
+      <div>
+        <div style="font-size: 15px; color: var(--cream); font-weight: 500;">Fotos de Relevamiento</div>
+        <div style="font-size: 12px; color: var(--dim); margin-top: 2px;">Carpeta para subir fotos de visitas</div>
       </div>
     </div>
 
@@ -953,7 +960,7 @@ input[type="file"] { padding: 10px 14px; font-size: 13px; cursor: pointer; }
 <script>
 // ─── CONFIGURACIÓN ────────────────────────────────────────────
 // Pegá acá la URL de tu Google Apps Script una vez que lo deployés
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz6JaVswR6tKcZ6be0DAbQp3UaQFHHy4WKr94lII7Ncrtv1bKc9DugA10eAvliLH_P6/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzACc2Hl1cuk006fvOz_Tl0rCvx6-uF555c0LY8gjHlNCURZcy_oBJW1DKaLvUIQxFp/exec';
 const CONNECTED = true; // URL configurada correctamente
 
 // Pegá acá el link de tu My Maps una vez que lo configures
@@ -1032,7 +1039,7 @@ function goto(screen, target){
   else if(screen==='producto-form'){editingProductId=target;setupProductoForm(target);}
   else if(screen==='clientes'){setTimeout(renderClientList,0);}
   else if(screen==='productos'){setTimeout(renderProductList,0);}
-  else if(screen==='op-venta'){setTimeout(renderOpVentaList,0);}
+  else if(screen==='op-venta'){loadOpVentas();}
 
   if(['stock','oportunidades-gondola','precios','venta-comp','fotos','op-venta-form'].includes(screen)){
     populateClientSelects();
@@ -1059,6 +1066,19 @@ function selectVendor(name, key){
     el.classList.toggle('selected', el.dataset.key===key);
   });
   document.getElementById('login-btn').style.display='block';
+}
+
+
+async function loadOpVentas(){
+  const list=document.getElementById('opv-list');
+  if(list) list.innerHTML='<div style="text-align:center;color:var(--dim);padding:32px 0;font-size:13px;">Cargando...</div>';
+  if(CONNECTED){
+    const res=await apiGet('getOpVentas');
+    if(res && res.opVentas && Array.isArray(res.opVentas)){
+      opVentas=res.opVentas;
+    }
+  }
+  renderOpVentaList();
 }
 
 async function doLogin(){
@@ -1194,7 +1214,7 @@ function toggleEventoField(){
 
 function setupClienteForm(id){
   if(id){
-    const c=clients.find(c=>c.id===id);
+    const c=clients.find(c=>(c.id||'').trim()===(id||'').trim());
     if(!c)return;
     document.getElementById('cliente-form-title').textContent='Editar Cliente';
     document.getElementById('cf-numero').value=c.numero||'';
@@ -1295,7 +1315,7 @@ function renderClientList(){
 
 function setupProductoForm(id){
   if(id){
-    const p=products.find(p=>p.id===id);
+    const p=products.find(p=>(p.id||'').trim()===(id||'').trim());
     if(!p)return;
     document.getElementById('producto-form-title').textContent='Editar Producto';
     document.getElementById('pf-nombre').value=p.nombre||'';
