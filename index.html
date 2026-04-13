@@ -960,7 +960,7 @@ input[type="file"] { padding: 10px 14px; font-size: 13px; cursor: pointer; }
 <script>
 // ─── CONFIGURACIÓN ────────────────────────────────────────────
 // Pegá acá la URL de tu Google Apps Script una vez que lo deployés
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzACc2Hl1cuk006fvOz_Tl0rCvx6-uF555c0LY8gjHlNCURZcy_oBJW1DKaLvUIQxFp/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwrx11FXw3EoXK_KsVFZmyDVkJ8r8LgYBJsbcF_Uy9fsBgdXOk2XNwuBZLumUjj2vbK/exec';
 const CONNECTED = true; // URL configurada correctamente
 
 // Pegá acá el link de tu My Maps una vez que lo configures
@@ -1481,22 +1481,69 @@ function previewFoto(){
 function saveFotos(){
   const cliente=document.getElementById('ft-cliente').value;
   if(!cliente){showToast('Seleccioná un cliente');return;}
-  const c=clients.find(c=>c.id===cliente);
+  const c=clients.find(c=>(c.id||'').trim()===(cliente||'').trim());
   const file=document.getElementById('ft-foto').files[0];
-  setLoading(true,'Guardando...');
-  apiPost({
-    action:'addFoto',
-    fecha:document.getElementById('ft-fecha').value,vendedor:currentVendor,
-    clienteId:cliente,numCliente:c?.numero,clienteNombre:c?.fantasia||c?.nombre,
-    urlFoto:file?'(foto: '+file.name+')':'',
-    descripcion:document.getElementById('ft-descripcion').value,
-  }).then(()=>{
-    setLoading(false);showToast('Foto guardada ✓');
-    document.getElementById('ft-cliente').value='';document.getElementById('ft-num-cliente').value='';
-    document.getElementById('ft-descripcion').value='';
-    document.getElementById('ft-preview').style.display='none';
-    goBack();
-  });
+  const fecha=document.getElementById('ft-fecha').value;
+  const desc=document.getElementById('ft-descripcion').value;
+
+  function doSave(urlFoto){
+    setLoading(true, file ? 'Subiendo foto...' : 'Guardando...');
+    apiPost({
+      action:'addFoto',
+      fecha, vendedor:currentVendor,
+      clienteId:cliente, numCliente:c?.numero, clienteNombre:c?.fantasia||c?.nombre,
+      urlFoto, descripcion:desc,
+    }).then(()=>{
+      setLoading(false); showToast('Foto guardada ✓');
+      document.getElementById('ft-cliente').value='';
+      document.getElementById('ft-num-cliente').value='';
+      document.getElementById('ft-descripcion').value='';
+      document.getElementById('ft-preview').style.display='none';
+      document.getElementById('ft-foto').value='';
+      goBack();
+    });
+  }
+
+  if(!file){ doSave(''); return; }
+
+  // Compress image before upload to avoid size issues
+  const img = new Image();
+  const reader = new FileReader();
+  reader.onload = e => {
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const MAX = 1200;
+      let w = img.width, h = img.height;
+      if(w > MAX){ h = Math.round(h * MAX/w); w = MAX; }
+      if(h > MAX){ w = Math.round(w * MAX/h); h = MAX; }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      const base64 = canvas.toDataURL('image/jpeg', 0.75).split(',')[1];
+      setLoading(true,'Subiendo foto a Drive...');
+      apiPost({
+        action:'uploadFoto',
+        base64, fileName: file.name, mimeType:'image/jpeg',
+        fecha, vendedor:currentVendor,
+        clienteId:cliente, numCliente:c?.numero, clienteNombre:c?.fantasia||c?.nombre,
+        descripcion:desc,
+      }).then(res=>{
+        setLoading(false);
+        if(res && res.url){
+          showToast('Foto subida ✓');
+        } else {
+          showToast('Foto guardada (sin URL)');
+        }
+        document.getElementById('ft-cliente').value='';
+        document.getElementById('ft-num-cliente').value='';
+        document.getElementById('ft-descripcion').value='';
+        document.getElementById('ft-preview').style.display='none';
+        document.getElementById('ft-foto').value='';
+        goBack();
+      });
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
 }
 
 function saveOpVenta(){
