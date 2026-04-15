@@ -152,7 +152,7 @@ input[type="file"] { padding: 10px 14px; font-size: 13px; cursor: pointer; }
 }
 .header-row { display: flex; justify-content: space-between; align-items: center; }
 .header-title { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--cream); font-weight: 700; }
-.header-vendor { font-size: 12px; color: var(--copper); font-weight: 600; letter-spacing: 1px; }
+.header-vendor { font-size: 12px; color: var(--copper); font-weight: 700; letter-spacing: 1.5px; font-family: Arial, sans-serif; text-transform: uppercase; }
 
 .content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 40px; }
 .divider { height: 1px; background: var(--border); margin: 20px 0; }
@@ -288,8 +288,11 @@ input[type="file"] { padding: 10px 14px; font-size: 13px; cursor: pointer; }
   color: var(--cream);
   border: 1px solid var(--border);
   border-radius: 12px;
-  font-family: 'Playfair Display', serif;
-  font-size: 22px;
+  font-family: Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
   cursor: pointer;
   text-align: center;
   transition: all 0.2s;
@@ -332,9 +335,14 @@ input[type="file"] { padding: 10px 14px; font-size: 13px; cursor: pointer; }
 <!-- ═══════════════════ HOME ═══════════════════ -->
 <div id="screen-home" class="screen">
   <div style="background: linear-gradient(135deg, var(--teal) 0%, var(--bg) 100%); padding: 48px 24px 28px; flex-shrink: 0;">
-    <div style="font-size: 10px; color: var(--copper); letter-spacing: 4px; text-transform: uppercase; font-weight: 600;">Bienvenido</div>
-    <div class="font-display" id="home-vendor-name" style="font-size: 34px; color: var(--cream); font-weight: 700; margin-top: 5px;">Iván</div>
-    <div style="font-size: 12px; color: var(--sage); margin-top: 5px; letter-spacing: 1px;">Pergamino · Relevamiento de Campo</div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <div>
+        <div style="font-size: 10px; color: var(--copper); letter-spacing: 4px; text-transform: uppercase; font-weight: 600;">Bienvenido</div>
+        <div id="home-vendor-name" style="font-size: 34px; color: var(--cream); font-weight: 700; margin-top: 5px; font-family: Arial, sans-serif; text-transform: uppercase; letter-spacing: 2px;">Iván</div>
+        <div style="font-size: 12px; color: var(--sage); margin-top: 5px; letter-spacing: 1px;">Pergamino · Relevamiento de Campo</div>
+      </div>
+      <button onclick="cerrarSesion()" style="background:transparent;border:1px solid var(--border);color:var(--dim);padding:8px 14px;border-radius:8px;font-family:Jost,sans-serif;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;margin-top:4px;">Salir</button>
+    </div>
   </div>
   <div class="content">
     <div class="section-label">Relevamientos</div>
@@ -345,15 +353,15 @@ input[type="file"] { padding: 10px 14px; font-size: 13px; cursor: pointer; }
       </div>
       <div class="module-card" style="border-left: 3px solid var(--teal);" onclick="goto('oportunidades-gondola')">
         <div class="module-icon">🏪</div>
-        <div class="module-label">Oportunidades<br>en Clientes</div>
+        <div class="module-label">Relevamiento<br>de espacios</div>
       </div>
       <div class="module-card" style="border-left: 3px solid var(--teal-light);" onclick="goto('precios')">
         <div class="module-icon">💰</div>
-        <div class="module-label">Precios<br>Competencia</div>
+        <div class="module-label">Relevamiento<br>de precios</div>
       </div>
       <div class="module-card" style="border-left: 3px solid var(--teal-light);" onclick="goto('venta-comp')">
         <div class="module-icon">📊</div>
-        <div class="module-label">Venta<br>Competencia</div>
+        <div class="module-label">Relevamiento<br>de venta</div>
       </div>
       <div class="module-card" style="border-left: 3px solid var(--sage);" onclick="goto('fotos')">
         <div class="module-icon">📷</div>
@@ -361,7 +369,7 @@ input[type="file"] { padding: 10px 14px; font-size: 13px; cursor: pointer; }
       </div>
       <div class="module-card" style="border-left: 3px solid var(--sage);" onclick="goto('op-venta')">
         <div class="module-icon">🎯</div>
-        <div class="module-label">Oportunidades<br>de Venta</div>
+        <div class="module-label">Seguimiento de<br>oportunidades</div>
       </div>
     </div>
 
@@ -373,13 +381,13 @@ input[type="file"] { padding: 10px 14px; font-size: 13px; cursor: pointer; }
       </div>
       <div class="module-card" style="border-left: 3px solid var(--copper);" onclick="goto('productos')">
         <div class="module-icon">🍷</div>
-        <div class="module-label">Productos<br>Competencia</div>
+        <div class="module-label">Productos</div>
       </div>
     </div>
 
     <div class="module-card" style="border-left: 3px solid var(--dim); margin-bottom: 14px;" onclick="goto('recursos')">
       <div class="module-icon">📋</div>
-      <div class="module-label">Catálogo y Recursos</div>
+      <div class="module-label">Catálogo y fotos</div>
     </div>
 
     <div class="module-card" style="border-left: 3px solid var(--sage); margin-bottom: 28px;" onclick="openMapa()">
@@ -396,7 +404,10 @@ input[type="file"] { padding: 10px 14px; font-size: 13px; cursor: pointer; }
 <!-- ═══════════════════ CLIENTES LIST ═══════════════════ -->
 <div id="screen-clientes" class="screen">
   <div class="header">
-    <button class="back-btn" onclick="goBack()">← Volver</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;">
+      <button class="back-btn" onclick="goBack()" style="padding:0;">← Volver</button>
+      <button onclick="goHome()" style="background:transparent;border:none;color:var(--copper);font-family:Jost,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">🏠 Inicio</button>
+    </div>
     <div class="header-row">
       <div class="header-title">Clientes</div>
       <div class="header-vendor" id="hv-clientes"></div>
@@ -415,7 +426,10 @@ input[type="file"] { padding: 10px 14px; font-size: 13px; cursor: pointer; }
 <!-- ═══════════════════ CLIENTE FORM ═══════════════════ -->
 <div id="screen-cliente-form" class="screen">
   <div class="header">
-    <button class="back-btn" onclick="goBack()">← Volver</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;">
+      <button class="back-btn" onclick="goBack()" style="padding:0;">← Volver</button>
+      <button onclick="goHome()" style="background:transparent;border:none;color:var(--copper);font-family:Jost,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">🏠 Inicio</button>
+    </div>
     <div class="header-row">
       <div class="header-title" id="cliente-form-title">Nuevo Cliente</div>
       <div class="header-vendor" id="hv-cliente-form"></div>
@@ -483,7 +497,10 @@ input[type="file"] { padding: 10px 14px; font-size: 13px; cursor: pointer; }
 <!-- ═══════════════════ PRODUCTOS LIST ═══════════════════ -->
 <div id="screen-productos" class="screen">
   <div class="header">
-    <button class="back-btn" onclick="goBack()">← Volver</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;">
+      <button class="back-btn" onclick="goBack()" style="padding:0;">← Volver</button>
+      <button onclick="goHome()" style="background:transparent;border:none;color:var(--copper);font-family:Jost,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">🏠 Inicio</button>
+    </div>
     <div class="header-row">
       <div class="header-title">Productos</div>
       <div class="header-vendor" id="hv-productos"></div>
@@ -498,7 +515,10 @@ input[type="file"] { padding: 10px 14px; font-size: 13px; cursor: pointer; }
 <!-- ═══════════════════ PRODUCTO FORM ═══════════════════ -->
 <div id="screen-producto-form" class="screen">
   <div class="header">
-    <button class="back-btn" onclick="goBack()">← Volver</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;">
+      <button class="back-btn" onclick="goBack()" style="padding:0;">← Volver</button>
+      <button onclick="goHome()" style="background:transparent;border:none;color:var(--copper);font-family:Jost,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">🏠 Inicio</button>
+    </div>
     <div class="header-row">
       <div class="header-title" id="producto-form-title">Nuevo Producto</div>
       <div class="header-vendor" id="hv-producto-form"></div>
@@ -532,7 +552,10 @@ input[type="file"] { padding: 10px 14px; font-size: 13px; cursor: pointer; }
 <!-- ═══════════════════ STOCK FORM ═══════════════════ -->
 <div id="screen-stock" class="screen">
   <div class="header">
-    <button class="back-btn" onclick="goBack()">← Volver</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;">
+      <button class="back-btn" onclick="goBack()" style="padding:0;">← Volver</button>
+      <button onclick="goHome()" style="background:transparent;border:none;color:var(--copper);font-family:Jost,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">🏠 Inicio</button>
+    </div>
     <div class="header-row">
       <div class="header-title">Relevamiento de Stock</div>
       <div class="header-vendor" id="hv-stock"></div>
@@ -590,9 +613,12 @@ input[type="file"] { padding: 10px 14px; font-size: 13px; cursor: pointer; }
 <!-- ═══════════════════ OPORTUNIDADES GONDOLA ═══════════════════ -->
 <div id="screen-oportunidades-gondola" class="screen">
   <div class="header">
-    <button class="back-btn" onclick="goBack()">← Volver</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;">
+      <button class="back-btn" onclick="goBack()" style="padding:0;">← Volver</button>
+      <button onclick="goHome()" style="background:transparent;border:none;color:var(--copper);font-family:Jost,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">🏠 Inicio</button>
+    </div>
     <div class="header-row">
-      <div class="header-title">Oportunidades en Clientes</div>
+      <div class="header-title">Relevamiento de espacios</div>
       <div class="header-vendor" id="hv-og"></div>
     </div>
   </div>
@@ -645,9 +671,12 @@ input[type="file"] { padding: 10px 14px; font-size: 13px; cursor: pointer; }
 <!-- ═══════════════════ PRECIOS COMPETENCIA ═══════════════════ -->
 <div id="screen-precios" class="screen">
   <div class="header">
-    <button class="back-btn" onclick="goBack()">← Volver</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;">
+      <button class="back-btn" onclick="goBack()" style="padding:0;">← Volver</button>
+      <button onclick="goHome()" style="background:transparent;border:none;color:var(--copper);font-family:Jost,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">🏠 Inicio</button>
+    </div>
     <div class="header-row">
-      <div class="header-title">Precios Competencia</div>
+      <div class="header-title">Relevamiento de precios</div>
       <div class="header-vendor" id="hv-precios"></div>
     </div>
   </div>
@@ -696,9 +725,12 @@ input[type="file"] { padding: 10px 14px; font-size: 13px; cursor: pointer; }
 <!-- ═══════════════════ VENTA COMPETENCIA ═══════════════════ -->
 <div id="screen-venta-comp" class="screen">
   <div class="header">
-    <button class="back-btn" onclick="goBack()">← Volver</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;">
+      <button class="back-btn" onclick="goBack()" style="padding:0;">← Volver</button>
+      <button onclick="goHome()" style="background:transparent;border:none;color:var(--copper);font-family:Jost,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">🏠 Inicio</button>
+    </div>
     <div class="header-row">
-      <div class="header-title">Venta Competencia</div>
+      <div class="header-title">Relevamiento de venta</div>
       <div class="header-vendor" id="hv-vc"></div>
     </div>
   </div>
@@ -743,7 +775,10 @@ input[type="file"] { padding: 10px 14px; font-size: 13px; cursor: pointer; }
 <!-- ═══════════════════ FOTOS ═══════════════════ -->
 <div id="screen-fotos" class="screen">
   <div class="header">
-    <button class="back-btn" onclick="goBack()">← Volver</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;">
+      <button class="back-btn" onclick="goBack()" style="padding:0;">← Volver</button>
+      <button onclick="goHome()" style="background:transparent;border:none;color:var(--copper);font-family:Jost,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">🏠 Inicio</button>
+    </div>
     <div class="header-row">
       <div class="header-title">Relevamiento Fotográfico</div>
       <div class="header-vendor" id="hv-fotos"></div>
@@ -783,9 +818,12 @@ input[type="file"] { padding: 10px 14px; font-size: 13px; cursor: pointer; }
 <!-- ═══════════════════ OPORTUNIDADES DE VENTA LIST ═══════════════════ -->
 <div id="screen-op-venta" class="screen">
   <div class="header">
-    <button class="back-btn" onclick="goBack()">← Volver</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;">
+      <button class="back-btn" onclick="goBack()" style="padding:0;">← Volver</button>
+      <button onclick="goHome()" style="background:transparent;border:none;color:var(--copper);font-family:Jost,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">🏠 Inicio</button>
+    </div>
     <div class="header-row">
-      <div class="header-title">Oportunidades de Venta</div>
+      <div class="header-title">Seguimiento de oportunidades</div>
       <div class="header-vendor" id="hv-opv"></div>
     </div>
   </div>
@@ -798,7 +836,10 @@ input[type="file"] { padding: 10px 14px; font-size: 13px; cursor: pointer; }
 <!-- ═══════════════════ OP VENTA FORM ═══════════════════ -->
 <div id="screen-op-venta-form" class="screen">
   <div class="header">
-    <button class="back-btn" onclick="goBack()">← Volver</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;">
+      <button class="back-btn" onclick="goBack()" style="padding:0;">← Volver</button>
+      <button onclick="goHome()" style="background:transparent;border:none;color:var(--copper);font-family:Jost,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">🏠 Inicio</button>
+    </div>
     <div class="header-row">
       <div class="header-title">Nueva Oportunidad</div>
       <div class="header-vendor" id="hv-opvf"></div>
@@ -873,9 +914,12 @@ input[type="file"] { padding: 10px 14px; font-size: 13px; cursor: pointer; }
 <!-- ═══════════════════ RECURSOS ═══════════════════ -->
 <div id="screen-recursos" class="screen">
   <div class="header">
-    <button class="back-btn" onclick="goBack()">← Volver</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;">
+      <button class="back-btn" onclick="goBack()" style="padding:0;">← Volver</button>
+      <button onclick="goHome()" style="background:transparent;border:none;color:var(--copper);font-family:Jost,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">🏠 Inicio</button>
+    </div>
     <div class="header-row">
-      <div class="header-title">Catálogo y Recursos</div>
+      <div class="header-title">Catálogo y fotos</div>
       <div class="header-vendor" id="hv-recursos"></div>
     </div>
   </div>
@@ -959,7 +1003,10 @@ input[type="file"] { padding: 10px 14px; font-size: 13px; cursor: pointer; }
 <!-- ═══════════════════ OP VENTA EDIT ═══════════════════ -->
 <div id="screen-op-venta-edit" class="screen">
   <div class="header">
-    <button class="back-btn" onclick="goBack()">← Volver</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;">
+      <button class="back-btn" onclick="goBack()" style="padding:0;">← Volver</button>
+      <button onclick="goHome()" style="background:transparent;border:none;color:var(--copper);font-family:Jost,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">🏠 Inicio</button>
+    </div>
     <div class="header-row">
       <div class="header-title">Editar Oportunidad</div>
       <div class="header-vendor" id="hv-opve"></div>
@@ -1124,6 +1171,8 @@ async function doLogin(){
     if(cr && cr.clients && Array.isArray(cr.clients)) clients = cr.clients.map(normalizeClient);
     if(pr && pr.products && Array.isArray(pr.products)) products = pr.products.map(normalizeProduct);
   }
+  // Save session
+  localStorage.setItem('pergamino_vendor', currentVendor);
   setLoading(false);
   screenHistory=[];
   updateHeaders();
@@ -1682,7 +1731,42 @@ window.saveOpVenta=saveOpVenta;window.openMapa=openMapa;
 window.editOpVenta=editOpVenta;window.saveOpVentaEdit=saveOpVentaEdit;
 window.renderClientList=renderClientList;window.showToast=showToast;
 
-loadVendors();
+
+function goHome(){
+  screenHistory=[];
+  showScreen('home');
+  updateHeaders();
+}
+
+function cerrarSesion(){
+  localStorage.removeItem('pergamino_vendor');
+  currentVendor='';
+  screenHistory=[];
+  showScreen('login');
+  loadVendors();
+}
+
+async function checkSession(){
+  const saved = localStorage.getItem('pergamino_vendor');
+  if(saved){
+    currentVendor = saved;
+    setLoading(true,'Cargando datos...');
+    if(CONNECTED){
+      const [cr, pr] = await Promise.all([apiGet('getClients'), apiGet('getProducts')]);
+      if(cr && cr.clients && Array.isArray(cr.clients)) clients = cr.clients.map(normalizeClient);
+      if(pr && pr.products && Array.isArray(pr.products)) products = pr.products.map(normalizeProduct);
+    }
+    setLoading(false);
+    updateHeaders();
+    showScreen('home');
+  } else {
+    loadVendors();
+  }
+}
+
+window.goHome=goHome;window.cerrarSesion=cerrarSesion;
+
+checkSession();
 
 </script>
 </body>
